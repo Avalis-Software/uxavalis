@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Avalis — Cadastro de médico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     Tokens reais de src/styles/theme.css e theme/preset.ts
+     ============================================================ */
+  :root {
+    --avalis-blue-primary: #2F80ED;
+    --avalis-blue-navy: #0B2A4A;
+    --avalis-blue-medical: #1E5FBF;
+    --avalis-blue-light: #4FA3FF;
+    --avalis-ice-primary: #E9F1F7;
+    --avalis-ice-white: #F8FBFE;
+    --app-font-family: Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+    --auth-page-bg:
+      linear-gradient(180deg, rgba(11, 42, 74, 0.04), transparent 30%),
+      linear-gradient(135deg, #f8fbfe 0%, #eef5fb 52%, #E9F1F7 100%);
+    --auth-page-grid: rgba(11, 42, 74, 0.05);
+    --auth-panel-bg: rgba(248, 251, 254, 0.92);
+    --auth-panel-border: rgba(11, 42, 74, 0.12);
+    --auth-panel-shadow: 0 24px 60px rgba(11, 42, 74, 0.1);
+    --auth-title-color: #0B2A4A;
+    --auth-muted-color: #536f8b;
+    --auth-field-bg: rgba(248, 251, 254, 0.94);
+    --auth-field-border: rgba(11, 42, 74, 0.18);
+    --auth-field-border-strong: rgba(30, 95, 191, 0.34);
+    --auth-focus-ring: rgba(47, 128, 237, 0.16);
+    --auth-accent-soft: rgba(47, 128, 237, 0.08);
+    --auth-danger-bg: #fff1f0;
+    --auth-danger-border: rgba(184, 73, 73, 0.18);
+    --auth-danger-color: #a04545;
+    --auth-success-bg: #edf6ff;
+    --auth-success-border: rgba(47, 128, 237, 0.18);
+    --auth-success-text: #1E5FBF;
+    --auth-logo-shadow: 0 18px 40px rgba(11, 42, 74, 0.16);
+    --primary-color: #2F80ED;
+    --transition-theme: background-color .25s ease, color .25s ease, border-color .25s ease;
+  }
+
+  html.app-dark {
+    --auth-page-bg:
+      linear-gradient(180deg, rgba(79, 163, 255, 0.16), transparent 34%),
+      linear-gradient(135deg, #04101d 0%, #071728 45%, #0B2A4A 100%);
+    --auth-page-grid: rgba(233, 241, 247, 0.08);
+    --auth-panel-bg: rgba(7, 23, 40, 0.84);
+    --auth-panel-border: rgba(79, 163, 255, 0.18);
+    --auth-panel-shadow: 0 24px 64px rgba(2, 6, 23, 0.54);
+    --auth-title-color: #E9F1F7;
+    --auth-muted-color: #bfd4e8;
+    --auth-field-bg: rgba(11, 42, 74, 0.58);
+    --auth-field-border: rgba(79, 163, 255, 0.18);
+    --auth-field-border-strong: rgba(79, 163, 255, 0.32);
+    --auth-focus-ring: rgba(79, 163, 255, 0.2);
+    --auth-accent-soft: rgba(79, 163, 255, 0.12);
+    --auth-danger-bg: rgba(160, 69, 69, 0.18);
+    --auth-danger-border: rgba(255, 180, 180, 0.22);
+    --auth-danger-color: #ffd6d3;
+    --auth-success-bg: rgba(47, 128, 237, 0.14);
+    --auth-success-border: rgba(79, 163, 255, 0.28);
+    --auth-success-text: #aac2dc;
+    --auth-logo-shadow: 0 20px 48px rgba(2, 6, 23, 0.46);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0;
+    font-family: var(--app-font-family);
+    color: var(--auth-title-color);
+    transition: var(--transition-theme);
+  }
+
+  .demo-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--avalis-blue-navy); color: var(--avalis-ice-white);
+    font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
+    text-align: center; padding: 6px 12px; font-weight: 600;
+  }
+  html.app-dark .demo-banner { background: #04101d; }
+
+  .auth-shell {
+    min-height: 100vh; padding: 56px 20px 24px; overflow-x: clip;
+    background-color: var(--auth-field-bg);
+    background-image:
+      linear-gradient(var(--auth-page-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--auth-page-grid) 1px, transparent 1px),
+      var(--auth-page-bg);
+    background-size: 32px 32px, 32px 32px, auto;
+  }
+  .auth-shell__frame {
+    width: min(100%, 1100px); min-height: calc(100vh - 80px); margin: 0 auto;
+    display: flex; flex-direction: column; align-items: stretch;
+    justify-content: center; gap: 24px;
+  }
+  .auth-shell__actions { display: flex; justify-content: flex-end; }
+
+  .theme-toggle-button {
+    border-radius: 999px; border: 1px solid var(--auth-panel-border);
+    background: rgba(255, 255, 255, 0.66); color: var(--auth-title-color);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08); backdrop-filter: blur(16px);
+    padding: 10px 16px; cursor: pointer; font-family: inherit; font-size: 0.9rem;
+    font-weight: 600; display: inline-flex; align-items: center; gap: 8px;
+    transition: var(--transition-theme);
+  }
+  html.app-dark .theme-toggle-button {
+    background: rgba(15, 23, 42, 0.72); box-shadow: 0 12px 28px rgba(2, 6, 23, 0.28);
+  }
+
+  /* Painel largo (auth-panel--wide do original) */
+  .auth-panel {
+    width: min(100%, 960px); margin: 0 auto; padding: 36px; border-radius: 28px;
+    background: var(--auth-panel-bg); border: 1px solid var(--auth-panel-border);
+    box-shadow: var(--auth-panel-shadow); backdrop-filter: blur(20px);
+  }
+  .auth-panel__brand { display: flex; justify-content: center; margin-bottom: 20px; }
+  .auth-brand { display: inline-flex; align-items: center; justify-content: center; }
+  .auth-brand__logo {
+    width: min(100%, 180px); height: auto; display: block;
+    filter: drop-shadow(var(--auth-logo-shadow));
+  }
+  .auth-panel__header { display: grid; gap: 10px; text-align: center; }
+  .auth-panel__eyebrow {
+    margin: 0; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--primary-color);
+  }
+  .auth-panel__title {
+    margin: 0; font-size: clamp(1.9rem, 4vw, 2.5rem); line-height: 1.05;
+    color: var(--auth-title-color);
+  }
+  .auth-panel__description {
+    max-width: 46ch; margin: 0 auto; font-size: 0.98rem; line-height: 1.6;
+    color: var(--auth-muted-color);
+  }
+  .auth-panel__body { margin-top: 28px; }
+
+  .auth-form { display: grid; gap: 22px; }
+
+  .auth-feedback { border-radius: 18px; padding: 14px 16px; font-size: 0.95rem; line-height: 1.5; }
+  .auth-feedback--error {
+    background: var(--auth-danger-bg); border: 1px solid var(--auth-danger-border);
+    color: var(--auth-danger-color);
+  }
+  .auth-feedback--success {
+    background: var(--auth-success-bg); border: 1px solid var(--auth-success-border);
+    color: var(--auth-success-text);
+  }
+
+  /* Seção (auth-section do original) */
+  .auth-section {
+    display: grid; gap: 18px; padding: 20px; min-width: 0; border-radius: 22px;
+    border: 1px solid var(--auth-panel-border);
+    background: color-mix(in srgb, var(--auth-panel-bg) 82%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .auth-section__header { display: grid; gap: 6px; }
+  .auth-section__title { margin: 0; font-size: 1rem; font-weight: 700; color: var(--auth-title-color); }
+  .auth-section__description { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--auth-muted-color); }
+
+  .auth-form-grid { display: grid; gap: 18px; min-width: 0; }
+  .auth-form-grid--two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .auth-form-grid--full { grid-column: 1 / -1; min-width: 0; }
+
+  .auth-field { display: grid; gap: 8px; min-width: 0; }
+  .auth-field__label-row {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .auth-field__label { font-size: 0.95rem; font-weight: 600; color: var(--auth-title-color); }
+  .auth-field__hint { font-size: 0.82rem; color: var(--auth-muted-color); }
+
+  .auth-input, .auth-select-el {
+    width: 100%; min-height: 52px; border-radius: 16px;
+    background: var(--auth-field-bg); border: 1px solid var(--auth-field-border);
+    color: var(--auth-title-color); padding: 0 16px; font-family: inherit; font-size: 1rem;
+    transition: var(--transition-theme), box-shadow 0.2s ease;
+  }
+  .auth-input::placeholder { color: var(--auth-muted-color); }
+  .auth-input:hover, .auth-select-el:hover { border-color: var(--auth-field-border-strong); }
+  .auth-input:focus, .auth-select-el:focus {
+    border-color: var(--primary-color); box-shadow: 0 0 0 4px var(--auth-focus-ring); outline: none;
+  }
+  .auth-select-el { appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23536f8b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 16px center; padding-right: 44px;
+  }
+
+  .input-invalid { border-color: rgba(220, 38, 38, 0.5) !important; }
+
+  .auth-password-wrap { position: relative; }
+  .auth-password-wrap .auth-input { padding-right: 3rem; }
+  .auth-password-toggle {
+    position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: var(--auth-muted-color);
+    padding: 4px; display: inline-flex;
+  }
+
+  /* Medidor de força de senha */
+  .pw-meter { height: 6px; border-radius: 999px; background: var(--auth-field-border); overflow: hidden; margin-top: 2px; }
+  .pw-meter__bar { height: 100%; width: 0; transition: width .25s ease, background-color .25s ease; }
+  .pw-meter__label { font-size: 0.8rem; color: var(--auth-muted-color); margin-top: 4px; }
+
+  /* MultiSelect simulado (chips + dropdown) */
+  .ms { position: relative; }
+  .ms__control {
+    width: 100%; min-height: 52px; border-radius: 16px;
+    background: var(--auth-field-bg); border: 1px solid var(--auth-field-border);
+    color: var(--auth-title-color); padding: 8px 44px 8px 12px; cursor: pointer;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    transition: var(--transition-theme);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23536f8b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 16px center;
+  }
+  .ms__control:hover { border-color: var(--auth-field-border-strong); }
+  .ms__placeholder { color: var(--auth-muted-color); font-size: 1rem; }
+  .ms__chip {
+    background: var(--auth-accent-soft); color: var(--auth-title-color);
+    border-radius: 999px; padding: 4px 10px; font-size: 0.85rem; display: inline-flex; gap: 6px; align-items: center;
+  }
+  .ms__chip button { background: none; border: none; color: inherit; cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; }
+  .ms__panel {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 50;
+    max-height: 260px; overflow-y: auto; border-radius: 18px;
+    border: 1px solid var(--auth-panel-border); background: var(--auth-panel-bg);
+    backdrop-filter: blur(18px); box-shadow: var(--auth-panel-shadow); padding: 8px; display: none;
+  }
+  .ms__panel.open { display: block; }
+  .ms__search {
+    width: 100%; min-height: 40px; border-radius: 12px; margin-bottom: 6px;
+    background: var(--auth-field-bg); border: 1px solid var(--auth-field-border);
+    color: var(--auth-title-color); padding: 0 12px; font-family: inherit; font-size: 0.9rem;
+  }
+  .ms__option {
+    padding: 9px 12px; border-radius: 12px; cursor: pointer; font-size: 0.92rem;
+    display: flex; align-items: center; gap: 10px; border: 1px solid transparent;
+    transition: background-color .15s ease, border-color .15s ease;
+  }
+  .ms__option:hover { border-color: var(--auth-field-border-strong); }
+  .ms__option.selected { border-color: var(--primary-color); }
+  .ms__check {
+    width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--auth-field-border-strong);
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .ms__option.selected .ms__check { background: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+
+  .auth-form__actions { margin-top: 6px; }
+  .auth-form__submit {
+    width: 100%; min-height: 52px; border-radius: 16px; font-weight: 700; font-size: 1rem;
+    font-family: inherit; cursor: pointer; border: 1px solid var(--avalis-blue-primary);
+    background: var(--avalis-blue-primary); color: var(--avalis-ice-white);
+    box-shadow: 0 14px 32px rgba(2, 132, 199, 0.2);
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    transition: var(--transition-theme), transform .2s ease, box-shadow .2s ease;
+  }
+  .auth-form__submit:hover {
+    background: var(--avalis-blue-medical); border-color: var(--avalis-blue-medical);
+    transform: translateY(-1px); box-shadow: 0 18px 36px rgba(2, 132, 199, 0.24);
+  }
+  .auth-form__submit:disabled { opacity: 0.7; cursor: default; transform: none; }
+
+  .auth-form__support {
+    margin: 16px 0 0; text-align: center; font-size: 0.93rem; line-height: 1.5; color: var(--auth-muted-color);
+  }
+  .auth-form__support a { color: var(--primary-color); font-weight: 700; text-decoration: none; }
+  .auth-form__support a:hover { text-decoration: underline; }
+
+  .spinner {
+    width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 767px) {
+    .auth-form-grid--two { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .auth-panel { padding: 22px 18px; border-radius: 24px; }
+    .auth-panel__title { font-size: 1.75rem; }
+    .auth-section { padding: 18px 16px; border-radius: 20px; }
+  }
+</style>
+</head>
+<body>
+  <div class="demo-banner">Tela de demonstração · dados fictícios</div>
+
+  <div class="auth-shell">
+    <div class="auth-shell__frame">
+      <div class="auth-shell__actions">
+        <button class="theme-toggle-button" id="themeToggle" type="button" aria-label="Alternar tema">
+          <span id="themeIcon"></span>
+          <span id="themeLabel">Tema escuro</span>
+        </button>
+      </div>
+
+      <div class="auth-panel">
+        <div class="auth-panel__brand">
+          <div class="auth-brand">
+            <img src="assets/img/logomarca_avalis.png" alt="Avalis" class="auth-brand__logo" />
+          </div>
+        </div>
+
+        <div class="auth-panel__header">
+          <p class="auth-panel__eyebrow">Avalis</p>
+          <h1 class="auth-panel__title">Cadastro de médico</h1>
+          <p class="auth-panel__description">Crie sua conta para configurar seu consultório e acessar o ambiente Avalis.</p>
+        </div>
+
+        <div class="auth-panel__body">
+          <form class="auth-form" id="registerForm" novalidate>
+            <div class="auth-feedback auth-feedback--error" id="generalError" role="alert" style="display:none"></div>
+            <div class="auth-feedback auth-feedback--success" id="generalSuccess" role="status" style="display:none"></div>
+
+            <!-- ===== Seção 1: Dados pessoais ===== -->
+            <section class="auth-section">
+              <header class="auth-section__header">
+                <h2 class="auth-section__title">Dados pessoais</h2>
+                <p class="auth-section__description">Informe seus dados principais e selecione as especialidades atendidas.</p>
+              </header>
+
+              <div class="auth-form-grid auth-form-grid--two">
+                <div class="auth-field auth-form-grid--full">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="name">Nome completo</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <input class="auth-input" id="name" type="text" placeholder="Dr. João Silva" value="Dra. Maria Exemplo" />
+                </div>
+
+                <div class="auth-field">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="email">E-mail</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <input class="auth-input" id="email" type="email" inputmode="email" placeholder="voce@empresa.com" value="medico@avalis.com.br" />
+                </div>
+
+                <div class="auth-field">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="crm">CRM</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <input class="auth-input" id="crm" type="text" placeholder="CRM/SP 123456" value="CRM/SP 123456" />
+                </div>
+
+                <div class="auth-field">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="telefone">Telefone</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <input class="auth-input" id="telefone" type="text" placeholder="(11) 98765-4321" value="(11) 98765-4321" />
+                </div>
+
+                <div class="auth-field auth-form-grid--full">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label">Especialidades</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <div class="ms" id="msEsp">
+                    <div class="ms__control" id="msControl" tabindex="0">
+                      <span class="ms__placeholder" id="msPlaceholder">Selecione uma ou mais especialidades</span>
+                    </div>
+                    <div class="ms__panel" id="msPanel">
+                      <input class="ms__search" id="msSearch" type="text" placeholder="Buscar especialidade..." />
+                      <div id="msOptions"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ===== Seção 2: Consultório ===== -->
+            <section class="auth-section">
+              <header class="auth-section__header">
+                <h2 class="auth-section__title">Consultório</h2>
+                <p class="auth-section__description">Preencha os dados de atendimento que serão usados no seu cadastro.</p>
+              </header>
+
+              <div class="auth-form-grid auth-form-grid--two">
+                <div class="auth-field auth-form-grid--full">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="nome_consultorio">Nome do consultório</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <input class="auth-input" id="nome_consultorio" type="text" placeholder="Clínica Exemplo" value="Clínica Exemplo" />
+                </div>
+
+                <div class="auth-field auth-form-grid--full">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="endereco_consultorio">Endereço</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <input class="auth-input" id="endereco_consultorio" type="text" placeholder="Av. Paulista" value="Av. Paulista" />
+                </div>
+
+                <div class="auth-field">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="numero_consultorio">Número</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <input class="auth-input" id="numero_consultorio" type="text" placeholder="1000" value="1000" />
+                </div>
+
+                <div class="auth-field">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="cep_consultorio">CEP</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <input class="auth-input" id="cep_consultorio" type="text" placeholder="01310-100" value="01310-100" />
+                </div>
+
+                <div class="auth-field">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="cidade_consultorio">Cidade</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <input class="auth-input" id="cidade_consultorio" type="text" placeholder="São Paulo" value="São Paulo" />
+                </div>
+
+                <div class="auth-field">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="estado_consultorio">Estado</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <select class="auth-select-el" id="estado_consultorio"></select>
+                </div>
+              </div>
+            </section>
+
+            <!-- ===== Seção 3: Segurança ===== -->
+            <section class="auth-section">
+              <header class="auth-section__header">
+                <h2 class="auth-section__title">Segurança</h2>
+                <p class="auth-section__description">Defina uma senha forte para proteger sua conta.</p>
+              </header>
+
+              <div class="auth-form-grid auth-form-grid--two">
+                <div class="auth-field">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="password">Senha</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <div class="auth-password-wrap">
+                    <input class="auth-input" id="password" type="password" placeholder="Crie uma senha" value="" />
+                    <button class="auth-password-toggle" type="button" data-target="password" aria-label="Mostrar senha">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                  <div class="pw-meter"><div class="pw-meter__bar" id="pwBar"></div></div>
+                  <div class="pw-meter__label" id="pwLabel">Digite uma senha</div>
+                </div>
+
+                <div class="auth-field">
+                  <div class="auth-field__label-row">
+                    <label class="auth-field__label" for="confirmPassword">Confirmar senha</label>
+                    <span class="auth-field__hint">Obrigatório</span>
+                  </div>
+                  <div class="auth-password-wrap">
+                    <input class="auth-input" id="confirmPassword" type="password" placeholder="Repita a senha" value="" />
+                    <button class="auth-password-toggle" type="button" data-target="confirmPassword" aria-label="Mostrar senha">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="auth-form__actions">
+              <button class="auth-form__submit" id="submitBtn" type="submit">
+                <span id="submitLabel">Criar conta</span>
+                <svg id="submitArrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </form>
+
+          <p class="auth-form__support">
+            Já tem uma conta?
+            <a href="01-login.html">Faça login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ---- Tema ----
+  (function () {
+    var root = document.documentElement;
+    var saved = localStorage.getItem('avalis-demo-theme');
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) root.classList.add('app-dark');
+    updateToggle();
+  })();
+  function updateToggle() {
+    var isDark = document.documentElement.classList.contains('app-dark');
+    document.getElementById('themeLabel').textContent = isDark ? 'Tema claro' : 'Tema escuro';
+    document.getElementById('themeIcon').innerHTML = isDark
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
+  document.getElementById('themeToggle').addEventListener('click', function () {
+    document.documentElement.classList.toggle('app-dark');
+    localStorage.setItem('avalis-demo-theme', document.documentElement.classList.contains('app-dark') ? 'dark' : 'light');
+    updateToggle();
+  });
+
+  // ---- Estados (UFs reais do projeto) ----
+  var estados = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SE','SP','TO'];
+  var selEstado = document.getElementById('estado_consultorio');
+  selEstado.innerHTML = '<option value="">UF</option>' + estados.map(function(uf){
+    return '<option value="'+uf+'"'+(uf==='SP'?' selected':'')+'>'+uf+'</option>';
+  }).join('');
+
+  // ---- Especialidades (lista real do projeto) ----
+  var especialidades = ['Acupuntura','Alergia e imunologia','Anestesiologia','Angiologia','Cardiologia','Cirurgia cardiovascular','Cirurgia da mão','Cirurgia de cabeça e pescoço','Cirurgia do aparelho digestivo','Cirurgia geral','Cirurgia oncológica','Cirurgia pediátrica','Cirurgia plástica','Cirurgia torácica','Cirurgia vascular','Clínica médica','Coloproctologia','Dermatologia','Endocrinologia e metabologia','Endoscopia','Gastroenterologia','Genética médica','Geriatria','Ginecologia e obstetrícia','Hematologia e hemoterapia','Homeopatia','Infectologia','Mastologia','Medicina de emergência','Medicina de família e comunidade','Medicina do trabalho','Medicina do tráfego','Medicina esportiva','Medicina física e reabilitação','Medicina intensiva','Medicina legal e perícia médica','Medicina nuclear','Medicina preventiva e social','Nefrologia','Neurocirurgia','Neurologia','Nutrologia','Oftalmologia','Oncologia clínica','Ortopedia e traumatologia','Otorrinolaringologia','Patologia','Patologia clínica/medicina laboratorial','Pediatria','Pneumologia','Psiquiatria','Radiologia e diagnóstico por imagem','Radioterapia','Reumatologia','Urologia'];
+  var selected = ['Anestesiologia']; // mock: já vem uma selecionada
+
+  var msControl = document.getElementById('msControl');
+  var msPanel = document.getElementById('msPanel');
+  var msOptions = document.getElementById('msOptions');
+  var msSearch = document.getElementById('msSearch');
+
+  function renderChips() {
+    var ph = document.getElementById('msPlaceholder');
+    msControl.querySelectorAll('.ms__chip').forEach(function(c){ c.remove(); });
+    if (selected.length === 0) { if(ph) ph.style.display = ''; return; }
+    if (ph) ph.style.display = 'none';
+    selected.forEach(function(item){
+      var chip = document.createElement('span');
+      chip.className = 'ms__chip';
+      chip.innerHTML = '<span>'+item+'</span><button type="button" aria-label="Remover">&times;</button>';
+      chip.querySelector('button').addEventListener('click', function(e){
+        e.stopPropagation();
+        selected = selected.filter(function(s){ return s !== item; });
+        renderChips(); renderOptions();
+      });
+      msControl.insertBefore(chip, document.getElementById('msPlaceholder'));
+    });
+  }
+  function renderOptions() {
+    var term = (msSearch.value || '').toLowerCase();
+    msOptions.innerHTML = '';
+    especialidades.filter(function(e){ return e.toLowerCase().indexOf(term) !== -1; }).forEach(function(item){
+      var isSel = selected.indexOf(item) !== -1;
+      var opt = document.createElement('div');
+      opt.className = 'ms__option' + (isSel ? ' selected' : '');
+      opt.innerHTML = '<span class="ms__check">'+(isSel?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'')+'</span><span>'+item+'</span>';
+      opt.addEventListener('click', function(){
+        if (isSel) selected = selected.filter(function(s){ return s !== item; });
+        else selected.push(item);
+        renderChips(); renderOptions();
+      });
+      msOptions.appendChild(opt);
+    });
+  }
+  msControl.addEventListener('click', function(){ msPanel.classList.toggle('open'); if(msPanel.classList.contains('open')){ msSearch.focus(); renderOptions(); } });
+  msSearch.addEventListener('input', renderOptions);
+  document.addEventListener('click', function(e){ if(!document.getElementById('msEsp').contains(e.target)) msPanel.classList.remove('open'); });
+  renderChips();
+
+  // ---- Mostrar/ocultar senha ----
+  document.querySelectorAll('.auth-password-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var input = document.getElementById(btn.getAttribute('data-target'));
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+  });
+
+  // ---- Medidor de força de senha (réplica do feedback do PrimeVue Password) ----
+  var pwInput = document.getElementById('password');
+  var pwBar = document.getElementById('pwBar');
+  var pwLabel = document.getElementById('pwLabel');
+  pwInput.addEventListener('input', function(){
+    var v = pwInput.value;
+    var score = 0;
+    if (v.length >= 6) score++;
+    if (/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
+    if (/\d/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    if (!v) { pwBar.style.width = '0'; pwLabel.textContent = 'Digite uma senha'; return; }
+    if (score <= 1) { pwBar.style.width = '33%'; pwBar.style.background = '#e0727a'; pwLabel.textContent = 'Fraca'; }
+    else if (score <= 3) { pwBar.style.width = '66%'; pwBar.style.background = '#d9a441'; pwLabel.textContent = 'Média'; }
+    else { pwBar.style.width = '100%'; pwBar.style.background = '#2F80ED'; pwLabel.textContent = 'Forte'; }
+  });
+
+  // ---- Submit simulando backend ----
+  document.getElementById('registerForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var err = document.getElementById('generalError');
+    var ok = document.getElementById('generalSuccess');
+    err.style.display = 'none'; ok.style.display = 'none';
+    document.querySelectorAll('.input-invalid').forEach(function(el){ el.classList.remove('input-invalid'); });
+
+    var required = ['name','email','crm','telefone','nome_consultorio','endereco_consultorio','numero_consultorio','cidade_consultorio','cep_consultorio','password','confirmPassword'];
+    var firstMissing = null;
+    required.forEach(function(id){
+      var el = document.getElementById(id);
+      if (!el.value.trim()) { el.classList.add('input-invalid'); if(!firstMissing) firstMissing = el; }
+    });
+    if (!selEstado.value) { selEstado.classList.add('input-invalid'); if(!firstMissing) firstMissing = selEstado; }
+    if (selected.length === 0) { msControl.classList.add('input-invalid'); if(!firstMissing) firstMissing = msControl; }
+
+    if (firstMissing) {
+      err.textContent = 'Preencha todos os campos obrigatórios.';
+      err.style.display = 'block';
+      firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (document.getElementById('password').value !== document.getElementById('confirmPassword').value) {
+      document.getElementById('confirmPassword').classList.add('input-invalid');
+      err.textContent = 'As senhas não coincidem.';
+      err.style.display = 'block';
+      return;
+    }
+
+    var btn = document.getElementById('submitBtn');
+    var label = document.getElementById('submitLabel');
+    var arrow = document.getElementById('submitArrow');
+    btn.disabled = true;
+    label.textContent = 'Criando conta...';
+    arrow.outerHTML = '<span class="spinner" id="submitArrow"></span>';
+
+    setTimeout(function(){
+      ok.textContent = 'Conta criada com sucesso! Redirecionando para o login...';
+      ok.style.display = 'block';
+      ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(function(){ window.location.href = '01-login.html'; }, 1200);
+    }, 1300);
+  });
+</script>
+</body>
+</html>
