@@ -156,9 +156,16 @@
 
   .auth-panel__brand { display: flex; justify-content: center; margin-bottom: 20px; }
 
-  /* Logo Avalis em SVG (sem depender de asset externo) */
+  .auth-brand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Logo real Avalis (PNG horizontal) */
   .auth-brand__logo {
-    width: min(100%, 200px);
+    width: min(100%, 180px);
+    height: auto;
+    display: block;
     filter: drop-shadow(var(--auth-logo-shadow));
   }
 
@@ -320,19 +327,9 @@
 
       <div class="auth-panel">
         <div class="auth-panel__brand">
-          <!-- Logomarca Avalis reproduzida em SVG -->
-          <svg class="auth-brand__logo" viewBox="0 0 220 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Avalis">
-            <defs>
-              <linearGradient id="avMark" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#4FA3FF"/>
-                <stop offset="1" stop-color="#1E5FBF"/>
-              </linearGradient>
-            </defs>
-            <!-- símbolo: "A" estilizado / batimento -->
-            <path d="M8 44 L24 14 L40 44 L33 44 L24 27 L15 44 Z" fill="url(#avMark)"/>
-            <path d="M4 38 L14 38 L18 30 L23 46 L28 24 L32 38 L52 38" fill="none" stroke="#2F80ED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
-            <text x="62" y="42" font-family="Inter, sans-serif" font-size="30" font-weight="700" fill="currentColor" letter-spacing="0.5">Avalis</text>
-          </svg>
+          <div class="auth-brand">
+            <img src="assets/img/logomarca_avalis.png" alt="Avalis" class="auth-brand__logo" />
+          </div>
         </div>
 
         <div class="auth-panel__header">
