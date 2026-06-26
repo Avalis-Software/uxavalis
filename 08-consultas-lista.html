@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Avalis — Agenda geral (consultas)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --avalis-blue-primary: #2F80ED; --avalis-blue-navy: #0B2A4A; --avalis-blue-medical: #1E5FBF;
+    --avalis-blue-light: #4FA3FF; --avalis-ice-primary: #E9F1F7; --avalis-ice-white: #F8FBFE;
+    --app-font-family: Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+    --avalis-border-soft: rgba(11, 42, 74, 0.12); --avalis-shadow-soft: 0 10px 30px rgba(11, 42, 74, 0.06);
+    --avalis-success-bg: #edf6ff; --avalis-success-border: rgba(47,128,237,0.18); --avalis-success-text: #1E5FBF;
+    --avalis-warning-bg: #fff7eb; --avalis-warning-border: rgba(176,117,31,0.2); --avalis-warning-text: #8a5a17;
+    --avalis-danger-bg: #fff1f0; --avalis-danger-border: rgba(184,73,73,0.18); --avalis-danger-text: #a04545;
+    --app-card-bg: #F5F9FC; --app-card-border: var(--avalis-border-soft); --app-card-shadow: var(--avalis-shadow-soft);
+    --surface-0: #f8fbfe;
+    --shell-page-bg: linear-gradient(180deg, #f7fbff 0%, #edf4fa 48%, #e9f1f7 100%);
+    --shell-surface: rgba(248, 251, 254, 0.92); --shell-border: rgba(11, 42, 74, 0.1);
+    --shell-title: #0B2A4A; --shell-muted: #5b7590;
+    --transition-theme: background-color .25s ease, color .25s ease, border-color .25s ease;
+  }
+  html.app-dark {
+    --avalis-success-bg: rgba(47,128,237,0.14); --avalis-success-border: rgba(79,163,255,0.28); --avalis-success-text: #aac2dc;
+    --avalis-warning-bg: rgba(245,158,11,0.12); --avalis-warning-border: rgba(255,180,80,0.22); --avalis-warning-text: #fbbf24;
+    --avalis-danger-bg: rgba(160,69,69,0.18); --avalis-danger-border: rgba(255,180,180,0.22); --avalis-danger-text: #ffd6d3;
+    --app-card-bg: rgba(11, 42, 74, 0.72); --app-card-border: rgba(79, 163, 255, 0.16); --app-card-shadow: 0 12px 32px rgba(2, 6, 23, 0.24);
+    --surface-0: #071728;
+    --shell-page-bg: linear-gradient(180deg, #06121f 0%, #09192c 48%, #0B2A4A 100%);
+    --shell-surface: rgba(7, 23, 40, 0.84); --shell-border: rgba(79, 163, 255, 0.16);
+    --shell-title: #E9F1F7; --shell-muted: #bfd4e8;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; font-family: var(--app-font-family); color: var(--shell-title); background: var(--shell-page-bg); transition: var(--transition-theme); }
+  .demo-banner { background: var(--avalis-blue-navy); color: var(--avalis-ice-white); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; text-align: center; padding: 5px 12px; font-weight: 600; }
+  html.app-dark .demo-banner { background: #04101d; }
+
+  .app-shell { height: calc(100vh - 26px); display: grid; grid-template-rows: auto 1fr; overflow: hidden; }
+  .app-shell__body { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 0; }
+  .app-shell__sidebar { overflow-y: auto; padding: 1.25rem 1rem; border-right: 1px solid var(--shell-border); background: var(--shell-surface); }
+  .app-shell__content { overflow-y: auto; padding: 1.75rem 2rem; min-width: 0; }
+  .topbar { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 0.9rem; padding: 0 1.5rem; height: 64px; border-bottom: 1px solid var(--shell-border); background: var(--shell-surface); backdrop-filter: blur(20px); }
+  html.app-dark .topbar { background: rgba(7,23,40,0.92); }
+  .topbar__brand { display: flex; align-items: center; gap: 0.6rem; }
+  .topbar__menu-toggle { display: none; background: none; border: none; cursor: pointer; color: var(--shell-title); width: 40px; height: 40px; border-radius: 999px; align-items: center; justify-content: center; }
+  .topbar__menu-toggle:hover { background: rgba(47,128,237,0.1); }
+  .topbar__logo { display: block; height: 34px; width: auto; }
+  .topbar__nav { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.45rem; }
+  .topbar__nav-item { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.62rem 0.9rem; border-radius: 999px; color: var(--shell-muted); font-size: 0.92rem; font-weight: 600; white-space: nowrap; border: none; background: none; cursor: pointer; font-family: inherit; transition: background-color 0.2s, color 0.2s; }
+  .topbar__nav-item:hover { background: rgba(47,128,237,0.1); color: var(--shell-title); }
+  .topbar__nav-item--active { background: linear-gradient(135deg, var(--avalis-blue-primary), var(--avalis-blue-medical)); color: var(--avalis-ice-white); box-shadow: 0 8px 18px rgba(47,128,237,0.16); }
+  .topbar__nav-item--active:hover { color: var(--avalis-ice-white); }
+  .topbar__nav-item svg { width: 16px; height: 16px; }
+  .topbar__actions { display: flex; align-items: center; gap: 0.6rem; }
+  .topbar__btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.85rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; border: 1px solid var(--shell-border); background: rgba(255,255,255,0.5); color: var(--shell-title); transition: var(--transition-theme); }
+  html.app-dark .topbar__btn { background: rgba(15,23,42,0.6); }
+  .topbar__btn:hover { border-color: var(--avalis-blue-light); }
+  .topbar__btn svg { width: 15px; height: 15px; }
+  .theme-toggle-button { border-radius: 999px; border: 1px solid var(--shell-border); background: rgba(255,255,255,0.6); color: var(--shell-title); padding: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: var(--transition-theme); }
+  html.app-dark .theme-toggle-button { background: rgba(15,23,42,0.7); }
+  .theme-toggle-button svg { width: 18px; height: 18px; }
+  .sidebar-section { margin-bottom: 1.5rem; }
+  .sidebar-section__title { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--shell-muted); margin: 0 0 0.6rem 0.65rem; }
+  .sidebar-item { display: flex; align-items: center; gap: 0.7rem; padding: 0.62rem 0.7rem; border-radius: 12px; color: var(--shell-muted); font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; background: none; font-family: inherit; width: 100%; text-align: left; margin-bottom: 0.15rem; transition: background-color 0.18s, color 0.18s; }
+  .sidebar-item:hover { background: rgba(47,128,237,0.08); color: var(--shell-title); }
+  .sidebar-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .dashboard-shell { display: flex; flex-direction: column; gap: 1.5rem; position: relative; padding-top: 8px; }
+  .brand-bar { height: 4px; width: 100%; position: absolute; top: 0; left: 0; border-radius: 4px 4px 0 0; background: linear-gradient(90deg, var(--avalis-blue-medical) 0%, var(--avalis-blue-primary) 100%); }
+  .dash-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+  .dashboard-shell__eyebrow { margin: 0; color: var(--avalis-blue-medical); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  .dashboard-shell__title { margin: 0.25rem 0; color: var(--shell-title); font-size: 1.65rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+  .dashboard-shell__description { margin: 0; color: var(--shell-muted); font-size: 0.88rem; line-height: 1.45; max-width: 700px; }
+
+  .header-actions-wrapper { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .btn-create { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.62rem 1.1rem; background: var(--avalis-blue-primary); color: var(--avalis-ice-white); border: 1px solid transparent; border-radius: 0.75rem; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit; transition: all 0.2s; box-shadow: 0 4px 12px rgba(47,128,237,0.16); }
+  .btn-create:hover { background: var(--avalis-blue-medical); transform: translateY(-1px); }
+  .btn-create svg { width: 15px; height: 15px; }
+  .btn-wf { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.62rem 1.1rem; background: rgba(47,128,237,0.08); color: var(--avalis-blue-medical); border: 1px solid rgba(47,128,237,0.16); border-radius: 0.75rem; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  html.app-dark .btn-wf { background: rgba(79,163,255,0.12); color: var(--avalis-blue-light); border-color: rgba(79,163,255,0.16); }
+  .btn-wf:hover { background: var(--avalis-blue-primary); color: #fff; transform: translateY(-1px); }
+  .btn-wf svg { width: 15px; height: 15px; }
+
+  .filters-panel { background: var(--app-card-bg); border: 1px solid var(--app-card-border); border-radius: 1.25rem; padding: 1.5rem; box-shadow: var(--app-card-shadow); }
+  .filters-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1rem; }
+  .field { display: grid; gap: 0.4rem; }
+  .field label { font-size: 0.78rem; font-weight: 700; color: var(--shell-muted); text-transform: uppercase; letter-spacing: 0.02em; }
+  .field input, .field select { width: 100%; min-height: 44px; border-radius: 0.75rem; border: 1px solid var(--app-card-border); background: var(--surface-0); color: var(--shell-title); padding: 0 0.85rem; font-family: inherit; font-size: 0.9rem; transition: var(--transition-theme); }
+  .field input:focus, .field select:focus { border-color: var(--avalis-blue-primary); outline: none; box-shadow: 0 0 0 3px rgba(47,128,237,0.14); }
+  .field select { cursor: pointer; }
+  .checkbox-container { margin-top: 1rem; }
+  .checkbox-field { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; font-weight: 600; color: var(--shell-title); cursor: pointer; }
+  .checkbox-field input { width: 16px; height: 16px; accent-color: var(--avalis-blue-primary); }
+  .filter-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.25rem; }
+  .secondary-action { padding: 0.6rem 1.2rem; border-radius: 0.75rem; border: 1px solid var(--app-card-border); background: none; color: var(--shell-title); font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .secondary-action:hover { border-color: var(--avalis-blue-light); }
+  .primary-action { padding: 0.6rem 1.2rem; border-radius: 0.75rem; border: 1px solid transparent; background: var(--avalis-blue-primary); color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .primary-action:hover { background: var(--avalis-blue-medical); }
+
+  .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.5rem; }
+  .consultation-card { background: var(--surface-0); border: 1px solid var(--app-card-border); border-radius: 1.25rem; padding: 1.35rem 1.35rem 1.1rem; box-shadow: var(--app-card-shadow); position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0.85rem; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; }
+  html.app-dark .consultation-card { background: rgba(11,42,74,0.4); }
+  .consultation-card:hover { transform: translateY(-2px); border-color: rgba(47,128,237,0.25); box-shadow: 0 12px 24px rgba(11,42,74,0.05); }
+  .consultation-card::before { content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%; }
+  .consultation-card.agendada::before { background: var(--avalis-blue-primary); }
+  .consultation-card.realizada::before { background: #10b981; }
+  .consultation-card.cancelada::before { background: var(--avalis-danger-text); }
+  .consultation-card.em_andamento::before { background: #f59e0b; }
+  .status-badge { display: inline-flex; align-self: flex-start; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .status-badge.agendada { background: var(--avalis-success-bg); color: var(--avalis-success-text); border: 1px solid var(--avalis-success-border); }
+  .status-badge.realizada { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+  .status-badge.cancelada { background: var(--avalis-danger-bg); color: var(--avalis-danger-text); border: 1px solid var(--avalis-danger-border); }
+  .status-badge.em_andamento { background: var(--avalis-warning-bg); color: var(--avalis-warning-text); border: 1px solid var(--avalis-warning-border); }
+  .patient-title { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--shell-title); }
+  .doctor-name, .consultation-type-list { margin: 0; font-size: 0.85rem; color: var(--shell-muted); display: flex; align-items: center; gap: 0.45rem; }
+  .doctor-name strong { color: var(--shell-title); font-weight: 700; }
+  .icon-muted { color: var(--shell-muted); display: inline-flex; }
+  .icon-muted svg { width: 0.85rem; height: 0.85rem; }
+  .card-meta { display: flex; justify-content: space-between; gap: 1rem; padding-top: 0.5rem; border-top: 1px solid rgba(11,42,74,0.06); }
+  html.app-dark .card-meta { border-top-color: rgba(79,163,255,0.08); }
+  .date-text, .modality-text { font-size: 0.8rem; color: var(--shell-muted); display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 500; }
+  .modality-text { text-transform: capitalize; }
+  .card-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .btn-detail, .btn-edit, .btn-delete { padding: 0.45rem 0.9rem; border-radius: 0.6rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: inherit; border: 1px solid transparent; transition: all 0.2s; }
+  .btn-detail { background: var(--avalis-blue-primary); color: #fff; }
+  .btn-detail:hover { background: var(--avalis-blue-medical); }
+  .btn-edit { background: rgba(47,128,237,0.08); color: var(--avalis-blue-medical); border-color: rgba(47,128,237,0.16); }
+  html.app-dark .btn-edit { background: rgba(79,163,255,0.12); color: var(--avalis-blue-light); }
+  .btn-edit:hover { background: rgba(47,128,237,0.16); }
+  .btn-delete { background: var(--avalis-danger-bg); color: var(--avalis-danger-text); border-color: var(--avalis-danger-border); }
+  .btn-delete:hover { filter: brightness(0.96); }
+
+  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 100; min-width: 280px; max-width: 360px; background: var(--shell-surface); border: 1px solid var(--shell-border); border-left: 4px solid var(--avalis-blue-primary); border-radius: 12px; padding: 14px 16px; box-shadow: 0 12px 32px rgba(11,42,74,0.16); backdrop-filter: blur(12px); transform: translateY(140%); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+  .toast.show { transform: translateY(0); }
+  .toast__title { font-size: 0.88rem; font-weight: 700; color: var(--shell-title); }
+  .toast__detail { font-size: 0.82rem; color: var(--shell-muted); margin-top: 2px; }
+
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .a-fade { animation: fadeInUp 0.35s cubic-bezier(0.16,1,0.3,1) forwards; }
+  .a-1 { animation: fadeInUp 0.4s cubic-bezier(0.16,1,0.3,1) 0.12s forwards; opacity: 0; }
+
+  .mobile-overlay { position: fixed; inset: 0; z-index: 40; background: rgba(7,23,40,0.42); backdrop-filter: blur(6px); display: none; }
+  .mobile-overlay.open { display: block; }
+  .mobile-panel { width: min(86vw, 320px); height: 100%; padding: 1rem 0.9rem; background: var(--shell-surface); border-right: 1px solid var(--shell-border); overflow-y: auto; }
+
+  @media (max-width: 1180px) {
+    .topbar { grid-template-columns: auto auto; grid-template-areas: 'brand actions' 'nav nav'; height: auto; padding: 0.75rem 1.25rem; align-items: start; }
+    .topbar__brand { grid-area: brand; } .topbar__nav { grid-area: nav; justify-content: flex-start; } .topbar__actions { grid-area: actions; justify-content: flex-end; }
+    .topbar__btn span { display: none; }
+    .filters-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+  @media (max-width: 900px) {
+    .app-shell__body { grid-template-columns: 1fr; } .app-shell__sidebar { display: none; }
+    .topbar { grid-template-columns: minmax(0,1fr) auto; grid-template-areas: 'brand actions'; height: 56px; padding: 0 1rem; align-items: center; }
+    .topbar__menu-toggle { display: inline-flex; } .topbar__nav { display: none; }
+    .grid-layout { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) { .filters-grid { grid-template-columns: 1fr; } .app-shell__content { padding: 1rem 0.875rem; } }
+</style>
+</head>
+<body>
+  <div class="demo-banner">Tela de demonstração · dados fictícios</div>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar__brand">
+        <button class="topbar__menu-toggle" id="menuToggle" aria-label="Abrir navegação"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <a href="03-dashboard-medico.html" aria-label="Página inicial"><img src="assets/img/logomarca_avalis.png" alt="Avalis" class="topbar__logo" /></a>
+      </div>
+      <nav class="topbar__nav">
+        <button class="topbar__nav-item" onclick="go('04-medico.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg><span>Médico</span></button>
+        <button class="topbar__nav-item topbar__nav-item--active" onclick="go('08-consultas-lista.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Consultas</span></button>
+        <button class="topbar__nav-item" onclick="go('20-pacientes-lista.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Pacientes</span></button>
+        <button class="topbar__nav-item" onclick="go('23-atendentes-lista.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg><span>Atendentes</span></button>
+      </nav>
+      <div class="topbar__actions">
+        <button class="theme-toggle-button" id="themeToggle" aria-label="Alternar tema"><span id="themeIcon"></span></button>
+        <button class="topbar__btn" id="logoutBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Sair</span></button>
+      </div>
+    </header>
+
+    <div class="app-shell__body">
+      <aside class="app-shell__sidebar" id="sidebar"></aside>
+
+      <main class="app-shell__content">
+        <div class="dashboard-shell">
+          <div class="brand-bar"></div>
+
+          <div class="dash-header a-fade">
+            <div>
+              <p class="dashboard-shell__eyebrow">Consultas</p>
+              <h1 class="dashboard-shell__title">Agenda Geral</h1>
+              <p class="dashboard-shell__description">Navegue e gerencie as consultas médicas agendadas ou realizadas no escopo operacional.</p>
+            </div>
+            <div class="header-actions-wrapper">
+              <button class="btn-create" onclick="go('10-consulta-criar.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Nova consulta</span></button>
+              <button class="btn-wf" onclick="go('09-consultas-workflow.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M6 9v6a3 3 0 0 0 3 3h6"/></svg><span>Workflow PEP</span></button>
+            </div>
+          </div>
+
+          <section class="filters-panel a-fade">
+            <div class="filters-grid">
+              <div class="field"><label>Data</label><input type="date" /></div>
+              <div class="field"><label>Hora</label><input type="time" /></div>
+              <div class="field"><label>Paciente</label><input type="text" placeholder="Nome do paciente" /></div>
+              <div class="field"><label>Tipo de consulta</label><input type="text" placeholder="Ex: Retorno" /></div>
+              <div class="field"><label>Médico</label><select><option>Todos os médicos</option><option>Dra. Maria Exemplo</option><option>Dr. João Exemplo</option><option>Dra. Ana Exemplo</option></select></div>
+              <div class="field"><label>Status</label><select><option>Todos</option><option>Agendada</option><option>Em andamento</option><option>Realizada</option><option>Cancelada</option></select></div>
+              <div class="field"><label>Limite</label><input type="number" value="20" min="1" max="100" /></div>
+              <div class="field"><label>Offset</label><input type="number" value="0" min="0" /></div>
+            </div>
+            <div class="checkbox-container">
+              <label class="checkbox-field"><input type="checkbox" /><span>Agrupar por médico</span></label>
+            </div>
+            <div class="filter-actions">
+              <button class="secondary-action" onclick="toastMsg('Filtros','Filtros limpos.')">Limpar</button>
+              <button class="primary-action" onclick="toastMsg('Filtros aplicados','Consultas atualizadas conforme os filtros.')">Aplicar filtros</button>
+            </div>
+          </section>
+
+          <div class="grid-layout a-1">
+            <article class="consultation-card agendada">
+              <span class="status-badge agendada">Agendada</span>
+              <h2 class="patient-title">Paciente Exemplo A</h2>
+              <p class="doctor-name"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><span>Médico: <strong>Dra. Maria Exemplo</strong></span></p>
+              <p class="consultation-type-list"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span>Consulta de Rotina</span></p>
+              <div class="card-meta">
+                <span class="date-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>26/06/2026 09:00</span></span>
+                <span class="modality-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></span><span>presencial</span></span>
+              </div>
+              <div class="card-actions"><button class="btn-detail" onclick="go('10-consulta-detalhe.html')">Detalhe</button><button class="btn-edit" onclick="go('12-consulta-editar.html')">Editar</button><button class="btn-delete" onclick="toastMsg('Excluir consulta','Consulta excluída com sucesso.')">Excluir</button></div>
+            </article>
+
+            <article class="consultation-card em_andamento">
+              <span class="status-badge em_andamento">Em andamento</span>
+              <h2 class="patient-title">Paciente Exemplo F</h2>
+              <p class="doctor-name"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><span>Médico: <strong>Dra. Maria Exemplo</strong></span></p>
+              <p class="consultation-type-list"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span>Primeira Consulta</span></p>
+              <div class="card-meta">
+                <span class="date-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>26/06/2026 10:30</span></span>
+                <span class="modality-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span><span>telemedicina</span></span>
+              </div>
+              <div class="card-actions"><button class="btn-detail" onclick="go('10-consulta-detalhe.html')">Detalhe</button><button class="btn-edit" onclick="go('12-consulta-editar.html')">Editar</button><button class="btn-delete" onclick="toastMsg('Excluir consulta','Consulta excluída com sucesso.')">Excluir</button></div>
+            </article>
+
+            <article class="consultation-card realizada">
+              <span class="status-badge realizada">Realizada</span>
+              <h2 class="patient-title">Paciente Exemplo C</h2>
+              <p class="doctor-name"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><span>Médico: <strong>Dr. João Exemplo</strong></span></p>
+              <p class="consultation-type-list"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span>Retorno</span></p>
+              <div class="card-meta">
+                <span class="date-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>18/06/2026 14:00</span></span>
+                <span class="modality-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></span><span>presencial</span></span>
+              </div>
+              <div class="card-actions"><button class="btn-detail" onclick="go('10-consulta-detalhe.html')">Detalhe</button><button class="btn-edit" onclick="go('12-consulta-editar.html')">Editar</button><button class="btn-delete" onclick="toastMsg('Excluir consulta','Consulta excluída com sucesso.')">Excluir</button></div>
+            </article>
+
+            <article class="consultation-card agendada">
+              <span class="status-badge agendada">Agendada</span>
+              <h2 class="patient-title">Paciente Exemplo G</h2>
+              <p class="doctor-name"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><span>Médico: <strong>Dra. Ana Exemplo</strong></span></p>
+              <p class="consultation-type-list"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span>Avaliação Pré-cirúrgica</span></p>
+              <div class="card-meta">
+                <span class="date-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>28/06/2026 08:30</span></span>
+                <span class="modality-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></span><span>presencial</span></span>
+              </div>
+              <div class="card-actions"><button class="btn-detail" onclick="go('10-consulta-detalhe.html')">Detalhe</button><button class="btn-edit" onclick="go('12-consulta-editar.html')">Editar</button><button class="btn-delete" onclick="toastMsg('Excluir consulta','Consulta excluída com sucesso.')">Excluir</button></div>
+            </article>
+
+            <article class="consultation-card cancelada">
+              <span class="status-badge cancelada">Cancelada</span>
+              <h2 class="patient-title">Paciente Exemplo B</h2>
+              <p class="doctor-name"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><span>Médico: <strong>Dr. João Exemplo</strong></span></p>
+              <p class="consultation-type-list"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span>Retorno</span></p>
+              <div class="card-meta">
+                <span class="date-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>15/06/2026 16:00</span></span>
+                <span class="modality-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span><span>telemedicina</span></span>
+              </div>
+              <div class="card-actions"><button class="btn-detail" onclick="go('10-consulta-detalhe.html')">Detalhe</button><button class="btn-edit" onclick="go('12-consulta-editar.html')">Editar</button><button class="btn-delete" onclick="toastMsg('Excluir consulta','Consulta excluída com sucesso.')">Excluir</button></div>
+            </article>
+
+            <article class="consultation-card agendada">
+              <span class="status-badge agendada">Agendada</span>
+              <h2 class="patient-title">Paciente Exemplo D</h2>
+              <p class="doctor-name"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><span>Médico: <strong>Dra. Maria Exemplo</strong></span></p>
+              <p class="consultation-type-list"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span>Consulta de Rotina</span></p>
+              <div class="card-meta">
+                <span class="date-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>30/06/2026 11:00</span></span>
+                <span class="modality-text"><span class="icon-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></span><span>presencial</span></span>
+              </div>
+              <div class="card-actions"><button class="btn-detail" onclick="go('10-consulta-detalhe.html')">Detalhe</button><button class="btn-edit" onclick="go('12-consulta-editar.html')">Editar</button><button class="btn-delete" onclick="toastMsg('Excluir consulta','Consulta excluída com sucesso.')">Excluir</button></div>
+            </article>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="mobile-overlay" id="mobileOverlay"><aside class="mobile-panel" id="mobilePanel"></aside></div>
+  <div class="toast" id="toast"><div class="toast__title" id="toastTitle"></div><div class="toast__detail" id="toastDetail"></div></div>
+
+<script>
+  (function () {
+    var saved = localStorage.getItem('avalis-demo-theme');
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('app-dark');
+    updateToggle();
+  })();
+  function updateToggle() {
+    var isDark = document.documentElement.classList.contains('app-dark');
+    document.getElementById('themeIcon').innerHTML = isDark
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
+  document.getElementById('themeToggle').addEventListener('click', function () {
+    document.documentElement.classList.toggle('app-dark');
+    localStorage.setItem('avalis-demo-theme', document.documentElement.classList.contains('app-dark') ? 'dark' : 'light');
+    updateToggle();
+  });
+
+  var sidebarItems = [
+    { label: 'Dashboard', target: '03-dashboard-medico.html', icon: '<path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>' },
+    { label: 'Médicos', target: '22-medicos-lista.html', icon: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>' },
+    { label: 'Processos', target: '13-processos-lista.html', icon: '<rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M6 9v6a3 3 0 0 0 3 3h6"/>' },
+    { label: 'Paciente', target: '22-paciente-detalhe.html', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>' },
+    { label: 'Formulários', target: '16-formularios-lista.html', icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>' },
+    { label: 'Atribuições', target: '20-atribuicoes-lista.html', icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 13"/>' },
+    { label: 'Perguntas', target: '18-perguntas-lista.html', icon: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>' },
+    { label: 'Perfil', target: '34-perfil.html', icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' }
+  ];
+  function renderSidebar(c) {
+    var html = '<div class="sidebar-section"><p class="sidebar-section__title">Navegação</p>';
+    sidebarItems.forEach(function (it) {
+      html += '<button class="sidebar-item" onclick="go(\'' + it.target + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + it.icon + '</svg><span>' + it.label + '</span></button>';
+    });
+    html += '</div>'; c.innerHTML = html;
+  }
+  renderSidebar(document.getElementById('sidebar'));
+  renderSidebar(document.getElementById('mobilePanel'));
+
+  document.getElementById('menuToggle').addEventListener('click', function () { document.getElementById('mobileOverlay').classList.add('open'); });
+  document.getElementById('mobileOverlay').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
+
+  function showToast(title, detail, cb) {
+    document.getElementById('toastTitle').textContent = title;
+    document.getElementById('toastDetail').textContent = detail;
+    var t = document.getElementById('toast'); t.classList.add('show');
+    setTimeout(function () { t.classList.remove('show'); if (cb) cb(); }, 1400);
+  }
+  function toastMsg(title, detail) { showToast(title, detail); }
+
+  var existing = ['01-login.html', '02-cadastro.html', '03-dashboard-medico.html', '04-medico.html', '05-dashboard-atendente.html', '06-dashboard-paciente.html', '07-dashboard-anestesista.html', '08-consultas-lista.html', 'index.html'];
+  function go(target) {
+    if (existing.indexOf(target) !== -1) { window.location.href = target; return; }
+    showToast('Tela em construção', 'Esta tela faz parte da demonstração e será disponibilizada em breve.');
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', function () {
+    showToast('Logout', 'Você saiu da sua conta', function () { window.location.href = '01-login.html'; });
+  });
+</script>
+</body>
+</html>
